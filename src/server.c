@@ -9,8 +9,10 @@
 #include<arpa/inet.h> //inet_addr
 #include<unistd.h>    //write
 #include<pthread.h> //for threading , link with lpthread
- 
-//the thread function
+
+#define MAX_BUFFER 2048
+
+// The thread function, that handles the connections
 void *connection_handler(void *);
  
 int main(int argc , char *argv[])
@@ -35,10 +37,10 @@ int main(int argc , char *argv[])
     if( bind(socket_desc,(struct sockaddr *)&server , sizeof(server)) < 0)
     {
         //print the error message
-        perror("bind failed. Error");
+        perror("Bind failed. Error");
         return 1;
     }
-    puts("bind done");
+    puts("Bind done");
      
     //Listen
     listen(socket_desc , 3);
@@ -87,17 +89,13 @@ void *connection_handler(void *socket_desc)
     //Get the socket descriptor
     int sock = *(int*)socket_desc;
     int read_size;
-    char *message , client_message[2000];
+    char *message , client_message[MAX_BUFFER];
      
-    //Send some messages to the client
-    message = "Greetings! I am your connection handler\n";
-    write(sock , message , strlen(message));
-     
-    message = "Now type something and i shall repeat what you type\n";
-    write(sock , message , strlen(message));
+    //message = "\nNow type something and i shall repeat what you type\n";
+    //write(sock , message , strlen(message));
      
     //Receive a message from client
-    while( (read_size = recv(sock , client_message , 2000 , 0)) > 0 )
+    while( (read_size = recv(sock , client_message , MAX_BUFFER , 0)) > 0 )
     {
         //Send the message back to client
         write(sock , client_message , strlen(client_message));

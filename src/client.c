@@ -5,12 +5,14 @@
 #include<string.h>    //strlen
 #include<sys/socket.h>    //socket
 #include<arpa/inet.h> //inet_addr
+
+#define MAX_BUFFER 2048
  
 int main(int argc , char *argv[])
 {
     int sock;
     struct sockaddr_in server;
-    char message[1024] , server_reply[2048];
+    char message[MAX_BUFFER] , server_reply[MAX_BUFFER];
      
     //Create socket
     sock = socket(AF_INET , SOCK_STREAM , 0);
@@ -37,7 +39,7 @@ int main(int argc , char *argv[])
     while(1)
     {
         printf("Enter message : ");
-        fgets(message, 1024, stdin);
+        fgets(message, MAX_BUFFER, stdin);
          
         //Send some data
         if( send(sock , message , strlen(message) , 0) < 0)
@@ -47,7 +49,7 @@ int main(int argc , char *argv[])
         }
          
         //Receive a reply from the server
-        if( recv(sock , server_reply , 2000 , 0) < 0)
+        if( recv(sock , server_reply , MAX_BUFFER , 0) < 0)
         {
             puts("recv failed");
             break;
