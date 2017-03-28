@@ -68,7 +68,7 @@ int main(int argc , char *argv[])
         }
          
         //Now join the thread , so that we dont terminate before the thread
-        //pthread_join( sniffer_thread , NULL);
+        pthread_join( sniffer_thread , NULL);
         puts("Handler assigned");
     }
      
@@ -98,10 +98,10 @@ void *connection_handler(void *socket_desc)
     while( (read_size = recv(sock , client_message , MAX_BUFFER , 0)) > 0 )
     {
         //Send the message back to client
-        write(sock , client_message , strlen(client_message));
+        write(sock , client_message, strlen(client_message));
+	memset(client_message, 0, MAX_BUFFER);
     }
-    printf("%s\n", client_message);
-     
+    
     if(read_size == 0)
     {
         puts("Client disconnected");

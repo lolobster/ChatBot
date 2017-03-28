@@ -42,7 +42,7 @@ int main(int argc , char *argv[])
         fgets(message, MAX_BUFFER, stdin);
          
         //Send some data
-        if( send(sock , message , strlen(message) , 0) < 0)
+        if( send(sock , message , strlen(message) + 1 , 0) < 0)
         {
             puts("Send failed");
             return 1;
@@ -54,9 +54,8 @@ int main(int argc , char *argv[])
             puts("recv failed");
             break;
         }
-         
         printf("Server reply: %s\n", server_reply);
-
+	memset(server_reply, 0, MAX_BUFFER);
     }
      
     close(sock);
