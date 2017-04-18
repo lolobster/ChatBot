@@ -1,3 +1,5 @@
+/* TCP server/client */
+
 #include<stdio.h>
 #include<string.h>    //strlen
 #include<stdlib.h>    //strlen
@@ -14,7 +16,10 @@ void *connection_handler(void *);
 
 // Test message
 char testMessage[] = "Hello client!";
+char question[] = "What you want to ask?";
 char testMessage2[] = "I CAN'T UNDERSTAND THAT";
+char *getMessage, *helloTest = "hello\n", *askSomething = "can i ask you something?\n";
+
 
 int main(int argc , char *argv[])
 {
@@ -69,7 +74,7 @@ int main(int argc , char *argv[])
         }
 
         //Now join the thread , so that we dont terminate before the thread
-        pthread_join( sniffer_thread , NULL);
+        //pthread_join( sniffer_thread , NULL);
         puts("Handler assigned");
     }
 
@@ -78,8 +83,6 @@ int main(int argc , char *argv[])
         perror("accept failed");
         return 1;
     }
-
-	//free(socket_desc);
     return 0;
 }
 
@@ -91,8 +94,7 @@ void *connection_handler(void *socket_desc)
  //Get the socket descriptor
     int sock = *(int*)socket_desc;
     int read_size, counter = 0;
-    char message, client_message[MAX_BUFFER];
-    char *getMessage = client_message, *helloTest = "hello\n";
+    char client_message[MAX_BUFFER];
 
     //Receive a message from client
     while( (read_size = recv(sock , client_message , MAX_BUFFER, 0)) > 0 )
@@ -103,24 +105,23 @@ void *connection_handler(void *socket_desc)
             counter++;
         }
         counter = 0;
-		
-        printf("%s", client_message);
-		//getMessage = client_message;
-        printf("%s", getMessage);
-		
-		int result = strcmp(getMessage, helloTest);
-        // Check if you can find the word
-        if(result == 0)
-        {
-			printf("Result: %d\n", result);
+
+	getMessage = client_message;
+
+	// Check if you can find the word
+        if(strcmp(getMessage, helloTest) == 0)
+    	{
             write(sock , testMessage, strlen(testMessage));
         }
+	else if(strcmp(getMessage, askSomething) == 0)
+	{
+	    write(sock, question, strlen(question));
+	}
         else
         {
             //Send the message back to client
-            printf("Result: %d\n", result);
             write(sock , testMessage2, strlen(testMessage2));
-		}
+	}
         //memset(testMessage, 0, MAX_BUFFER);
     }
 
