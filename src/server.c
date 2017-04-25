@@ -98,6 +98,7 @@ void *connection_handler(void *socket_desc)
     int sock = *(int*)socket_desc;
     int read_size, counter = 0;
     char client_message[MAX_BUFFER];
+    const char s[2] = " ";
 
     //Receive a message from client
     while( (read_size = recv(sock , client_message , MAX_BUFFER, 0)) > 0 )
@@ -107,24 +108,30 @@ void *connection_handler(void *socket_desc)
             client_message[counter] = tolower(client_message[counter]);
             counter++;
         }
+
         counter = 0;
 
-	getMessage = client_message;
+	getMessage = strtok(client_message, s);
 
-	// Check if you can find the word
-        if(strcmp(getMessage, helloTest) == 0)
-    	{
-            write(sock , testMessage, strlen(testMessage));
-        }
-	else if(strcmp(getMessage, askSomething) == 0)
+	while(getMessage != NULL)
 	{
-	    write(sock, question, strlen(question));
+	    printf("%s\n", getMessage);
+	    getMessage = strtok(NULL, s);
 	}
-        else
-        {
+	// Check if you can find the word
+        //if(strcmp(getMessage, helloTest) == 0)
+    	//{
+        //    write(sock , testMessage, strlen(testMessage));
+        //}
+	//else if(strcmp(getMessage, askSomething) == 0)
+	//{
+	//    write(sock, question, strlen(question));
+	//}
+        //else
+        //{
             //Send the message back to client
-            write(sock , testMessage2, strlen(testMessage2));
-	}
+        //    write(sock , testMessage2, strlen(testMessage2));
+	//}
         //memset(testMessage, 0, MAX_BUFFER);
     }
 
