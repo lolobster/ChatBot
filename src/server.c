@@ -8,11 +8,14 @@
 #include<unistd.h>    //write
 #include<pthread.h> //for threading , link with lpthread
 #include<ctype.h>   // Char tolower() function
+#include"../include/sqlite/sqlite3.h" // Include SQLite database
+//#include<sqlite3.h>
 
 #define MAX_BUFFER 2048
 
 // The thread function, that handles the connections
 void *connection_handler(void *);
+void openDB();
 
 // Test message
 char testMessage[] = "Hello client!";
@@ -25,7 +28,7 @@ int main(int argc , char *argv[])
 {
     int socket_desc , client_sock , c , *new_sock;
     struct sockaddr_in server , client;
-
+    openDB();
     //Create socket
     socket_desc = socket(AF_INET , SOCK_STREAM , 0);
     if (socket_desc == -1)
@@ -139,4 +142,27 @@ void *connection_handler(void *socket_desc)
     free(socket_desc);
 
     return 0;
+}
+
+/* Open database here */
+void openDB()
+{
+   sqlite3 *db;
+   char *errorMsg = 0;
+   int rc;
+   
+   if(access("db/dialog.db", F_OK) != -1)
+   {
+	rc = sqlite3_open("db/dialog.db", &db);
+
+	fprintf(stdout, "Opened database succefully\n");
+
+	sqlite3_close(db);
+   }
+   else
+   {
+	fprintf(stdout,"Database not found!\n");
+   }
+
+   //sqlite3_close(db);
 }
