@@ -14,6 +14,7 @@
 #define MAX_BUFFER 2048
 
 sqlite3* db;
+sqlite3_stmt *res;
 
 // The thread function, that handles the connections
 void *connection_handler(void *);
@@ -122,6 +123,34 @@ void *connection_handler(void *socket_desc)
 	{
 	    printf("%s\n", getMessage);
 	    getMessage = strtok(NULL, s);
+//////////////////////////////////////////////
+	    // Find input word
+	    char *sql = "SELECT InputId FROM Input WHERE input = ?";
+
+	    int rc = sqlite3_prepare_v2(db, sql, -1, &res, 0);
+
+	    if (rc == SQLITE_OK)
+	    {
+		printf("OK\n");
+		sqlite3_bind_text(res, 1, getMessage, 1, SQLITE_TRANSIENT);
+		printf("OK 2\n");
+	    }
+	    else 
+	    {
+		fprintf(stderr, "FAILE LOLOLOL %s\n", sqlite3_errmsg(db));
+	    }
+	    int step = sqlite3_step(res);
+
+	    if (step == SQLITE_ROW)
+	    {
+		printf("From table: %s\n", sqlite3_column_text(res, 1));
+	    }
+	    else
+	    {
+	   	 printf("YOLO\n");
+	    }
+	    sqlite3_finalize(res);
+//////////////////////////////////////////////////////////
 	}
 
 	
