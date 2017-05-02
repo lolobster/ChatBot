@@ -13,6 +13,8 @@
 
 #define MAX_BUFFER 2048
 
+sqlite3* db;
+
 // The thread function, that handles the connections
 void *connection_handler(void *);
 void openDB();
@@ -28,7 +30,9 @@ int main(int argc , char *argv[])
 {
     int socket_desc , client_sock , c , *new_sock;
     struct sockaddr_in server , client;
+    
     openDB();
+    
     //Create socket
     socket_desc = socket(AF_INET , SOCK_STREAM , 0);
     if (socket_desc == -1)
@@ -86,6 +90,7 @@ int main(int argc , char *argv[])
         perror("accept failed");
         return 1;
     }
+    sqlite3_close(db);
     return 0;
 }
 
@@ -118,6 +123,8 @@ void *connection_handler(void *socket_desc)
 	    printf("%s\n", getMessage);
 	    getMessage = strtok(NULL, s);
 	}
+
+	
 	// Check if you can find the word
         //if(strcmp(getMessage, helloTest) == 0)
     	//{
@@ -154,17 +161,17 @@ void *connection_handler(void *socket_desc)
 /* Open database here */
 void openDB()
 {
-   sqlite3 *db;
    char *errorMsg = 0;
    int rc;
-   
+
+   sqlite3_close(db);
    if(access("db/dialog.db", F_OK) != -1)
    {
 	rc = sqlite3_open("db/dialog.db", &db);
 
 	fprintf(stdout, "Opened database succefully\n");
 
-	sqlite3_close(db);
+	//sqlite3_close(db);
    }
    else
    {
