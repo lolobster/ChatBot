@@ -131,20 +131,23 @@ void *connection_handler(void *socket_desc)
 
 	    if (rc == SQLITE_OK)
 	    {
-		printf("OK\n");
 		sqlite3_bind_text(res, 1, getMessage, 1, SQLITE_TRANSIENT);
-		printf("OK 2\n");
 	    }
 	    else 
 	    {
-		fprintf(stderr, "FAILE LOLOLOL %s\n", sqlite3_errmsg(db));
+		fprintf(stderr, "FAILED %s\n", sqlite3_errmsg(db));
 	    }
 	    int step = sqlite3_step(res);
 
 	    if (step == SQLITE_ROW)
 	    {
-		printf("From table: %s\n", sqlite3_column_text(res, 1));
+		printf("From table: %s\n", sqlite3_column_text(res, 0));
 	    }
+        else if (step == SQLITE_DONE)
+        {
+            printf("Done\n");
+            break;
+        }
 	    else
 	    {
 	   	 printf("YOLO\n");
